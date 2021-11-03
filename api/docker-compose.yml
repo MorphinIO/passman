@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:latest
+    container_name: passman-postgres
+    env_file:
+      - .env
+    restart: always
+    volumes:
+      - ./.docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./data/postgres:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
