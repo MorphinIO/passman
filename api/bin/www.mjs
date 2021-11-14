@@ -1,4 +1,4 @@
-import createApp from '../index.js';
+import createApp from '../index.mjs';
 import dotenv from 'dotenv'
 dotenv.config()
 
