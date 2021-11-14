@@ -1,4 +1,6 @@
 import knx from 'knex';
+import dotenv from 'dotenv';
+dotenv.config();
 
 let connection;
 if (process.env.DATABASE_URL) {
