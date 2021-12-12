@@ -125,21 +125,17 @@ const createApp = async () => {
             let decoded = jwt.verify(req.session.loginAuthToken, ACCESS_TOKEN_SECRET);
             let { title } = req.query;
             let key = decoded.pass.slice(27, decoded.pass.length);
-            console.log('im here 1');
-
-            console.log(title);
-            console.log(decoded.email);
             
             let result = await knex('passwords').select('*').where({
                 username: decoded.email,
                 title: title
             });
 
-            console.log('im here 2', result);
-            
+            console.log(result[0].password);
             let decrypted = CryptoJS.AES.decrypt(result[0].password, key).toString(CryptoJS.enc.Utf8);
+
+            console.log('$', decrypted);
             
-            console.log(decrypted);
 
             return res.json({
                 message: 'success',
@@ -187,6 +183,7 @@ const createApp = async () => {
             let key = decoded.pass.slice(27, decoded.pass.length);
 
             let data = CryptoJS.AES.encrypt(newPassword, key);
+            console.log('$', data.toString());
 
             await knex('passwords').where({
                 title: title,
