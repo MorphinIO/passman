@@ -66,7 +66,6 @@ const createApp = async () => {
             if (result[0].password.length === 0) {
                 bcrypt.hash(req.body.password, 10, async(err, hash) => {
                     try {
-                        console.log('test', hash);
                         await knex('users')
                             .where({ email: req.body.email })
                             .update({ password: hash })
@@ -111,13 +110,30 @@ const createApp = async () => {
     })
 
     rootRouter.get('/logout', async (req, res) => {
-        console.log(req.session.loginAuthToken);
         req.session.destroy((err) => {
             if(err) {
                 return console.log(err);
             }
         });
         return res.json('logged out');
+    })
+    
+    rootRouter.get('/records', async (req, res) => {
+        try {
+            let decoded = jwt.verify(req.session.loginAuthToken, ACCESS_TOKEN_SECRET);
+            
+            let result = await knex('passwords').select('*').where({
+                username: decoded.email,
+            });
+            
+
+            return res.json({
+                message: 'success',
+                entries: result,
+            })
+        } catch (e) {
+            return res.json(e);
+        }
     })
 
     rootRouter.get('/record', async (req, res) => {
@@ -131,11 +147,7 @@ const createApp = async () => {
                 title: title
             });
 
-            console.log(result[0].password);
-            let decrypted = CryptoJS.AES.decrypt(result[0].password, key).toString(CryptoJS.enc.Utf8);
-
-            console.log('$', decrypted);
-            
+            let decrypted = CryptoJS.AES.decrypt(result[0].password, key).toString(CryptoJS.enc.Utf8);            
 
             return res.json({
                 message: 'success',
